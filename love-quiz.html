@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Love Connection Quiz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffecf3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .quiz-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .title {
+            color: #e84c8d;
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #e84c8d;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .question {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .question-number {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #e84c8d;
+            background-color: #fff9fb;
+        }
+        
+        .option-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: inline-block;
+        }
+        
+        .option.selected .option-circle {
+            border-color: #e84c8d;
+            background-color: #e84c8d;
+        }
+        
+        .button {
+            background-color: #e84c8d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .button:hover {
+            background-color: #d33878;
+        }
+
+        .button:disabled {
+            background-color: #f0a0c0;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            display: none;
+        }
+        
+        .heart-icon {
+            color: #e84c8d;
+            font-size: 24px;
+        }
+        
+        .result-image {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+        }
+        
+        .result-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .result-description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* Heart with sparkles SVG for result */
+        .heart-sparkle {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="quiz-section">
+            <h1 class="title">❤️ Relationship Quiz ❤️</h1>
+            <p class="subtitle">Answer these questions about our connection</p>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="question-number" id="question-number">Question 1 of 5</div>
+            <div class="question" id="question">How do you feel when we spend time together?</div>
+            <div class="options" id="options">
+                <div class="option" onclick="selectOption(this, 4)" data-value="4">
+                    <span class="option-circle"></span>
+                    <span>It's the highlight of my day</span>
+                </div>
+                <div class="option" onclick="selectOption(this, 3)" data-value="3">
+                    <span class="option-circle"></span>
+                    <span>I always have a great time</span>
+                </div>
+                <div class="option" onclick="selectOption(this, 2)" data-value="2">
+                    <span class="option-circle"></span>
+                    <span>I look forward to our time together</span>
+                </div>
+                <div class="option" onclick="selectOption(this, 1)" data-value="1">
+                    <span class="option-circle"></span>
+                    <span>It's nice to catch up</span>
+                </div>
+            </div>
+            <button id="next-button" class="button" disabled onclick="nextQuestion()">
+                Next Question <span>→</span>
+            </button>
+        </div>
+        
+        <div id="result-section" class="result">
+            <svg class="heart-sparkle" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 80 C35 65, 0 40, 0 20 C0 0, 20 0, 30 10 L50 30 L70 10 C80 0, 100 0, 100 20 C100 40, 65 65, 50 80 Z" fill="#e84c8d"/>
+                <path d="M75 15 L80 5 L85 15 L95 20 L85 25 L80 35 L75 25 L65 20 Z" fill="#ffd700"/>
+            </svg>
+            <h2 class="result-title">Quiz Result</h2>
+            <p class="result-description" id="result-description">You secretly love me! Admit it!</p>
+            <p class="result-description">Based on your answers, it seems like there's something special between us! 💕</p>
+            <button class="button" onclick="resetQuiz()">
+                Take Quiz Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "How do you feel when we spend time together?",
+                options: [
+                    "It's the highlight of my day",
+                    "I always have a great time",
+                    "I look forward to our time together",
+                    "It's nice to catch up"
+                ]
+            },
+            {
+                question: "What makes you smile when you think about us?",
+                options: [
+                    "The way we laugh at the same things",
+                    "Our inside jokes that nobody else gets",
+                    "How comfortable we are together",
+                    "The memories we've created"
+                ]
+            },
+            {
+                question: "How would you describe our connection?",
+                options: [
+                    "Soulmates who found each other",
+                    "Two people with amazing chemistry",
+                    "Friends with a special bond",
+                    "Companions who enjoy each other's company"
+                ]
+            },
+            {
+                question: "When we're apart, how often do you think of me?",
+                options: [
+                    "All the time - you're always on my mind",
+                    "Often throughout the day",
+                    "Sometimes, especially when something reminds me of you",
+                    "Occasionally when I'm not busy"
+                ]
+            },
+            {
+                question: "What's your favorite way to show you care?",
+                options: [
+                    "Surprising you with thoughtful gestures",
+                    "Telling you how important you are to me",
+                    "Making time for you no matter how busy I am",
+                    "Listening when you need to talk"
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+        let totalScore = 0;
+
+        function selectOption(option, value) {
+            // Remove selected class from all options
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            option.classList.add('selected');
+            
+            // Enable next button
+            document.getElementById('next-button').disabled = false;
+            
+            // Store selected answer value
+            selectedAnswer = value;
+        }
+
+        function nextQuestion() {
+            // Add score
+            totalScore += selectedAnswer;
+            
+            // Move to next question or show result
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                // Update progress bar
+                document.getElementById('progress').style.width = `${(currentQuestion / questions.length) * 100}%`;
+                
+                // Update question number
+                document.getElementById('question-number').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+                
+                // Update question
+                document.getElementById('question').textContent = questions[currentQuestion].question;
+                
+                // Update options
+                const optionsContainer = document.getElementById('options');
+                optionsContainer.innerHTML = '';
+                
+                questions[currentQuestion].options.forEach((optionText, index) => {
+                    const value = 4 - index; // Reverse index to give higher score to first options
+                    optionsContainer.innerHTML += `
+                        <div class="option" onclick="selectOption(this, ${value})" data-value="${value}">
+                            <span class="option-circle"></span>
+                            <span>${optionText}</span>
+                        </div>
+                    `;
+                });
+                
+                // Disable next button until option selected
+                document.getElementById('next-button').disabled = true;
+                
+                // Reset selected answer
+                selectedAnswer = null;
+            } else {
+                // Show result
+                document.getElementById('quiz-section').style.display = 'none';
+                document.getElementById('result-section').style.display = 'block';
+                
+                // Always show the twist ending regardless of actual score
+                document.getElementById('result-description').textContent = "You secretly love me! Admit it!";
+            }
+        }
+
+        function resetQuiz() {
+            // Reset variables
+            currentQuestion = 0;
+            selectedAnswer = null;
+            totalScore = 0;
+            
+            // Reset UI
+            document.getElementById('progress').style.width = '0%';
+            document.getElementById('question-number').textContent = `Question 1 of ${questions.length}`;
+            document.getElementById('question').textContent = questions[0].question;
+            
+            // Reset options
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            questions[0].options.forEach((optionText, index) => {
+                const value = 4 - index;
+                optionsContainer.innerHTML += `
+                    <div class="option" onclick="selectOption(this, ${value})" data-value="${value}">
+                        <span class="option-circle"></span>
+                        <span>${optionText}</span>
+                    </div>
+                `;
+            });
+            
+            // Disable next button
+            document.getElementById('next-button').disabled = true;
+            
+            // Show quiz section, hide result section
+            document.getElementById('quiz-section').style.display = 'block';
+            document.getElementById('result-section').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
